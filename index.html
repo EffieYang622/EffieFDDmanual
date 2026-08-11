@@ -88,9 +88,23 @@ function login() {
     loadSidebar();
     makeWatermark();
     sessionStorage.setItem("fdd_auth", "1");
+    sessionStorage.setItem("fdd_user", u);
+    logLogin(u);
   } else {
     document.getElementById("loginError").style.display = "block";
   }
+}
+async function logLogin(user) {
+  try {
+    const BLOB = '019fef51-fefb-7c95-8697-5398f7a6eaa1';
+    let r = await fetch('https://jsonblob.com/api/jsonBlob/' + BLOB);
+    let data = await r.json();
+    data.logins.push({ user: user, time: new Date().toISOString() });
+    await fetch('https://jsonblob.com/api/jsonBlob/' + BLOB, {
+      method: 'PUT', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+  } catch (e) { /* silent fail */ }
 }
 function logout() {
   sessionStorage.removeItem("fdd_auth");
